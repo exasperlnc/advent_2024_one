@@ -12,8 +12,8 @@ import (
 func main() {
 	list1, list2, _ := pull_list()
 	sort1, sort2 := sort_lists(list1, list2)
-	fmt.Println("Sorted List 1:", sort1)
-	fmt.Println("Sorted List 2:", sort2)
+	total := compare_lists(sort1, sort2)
+	fmt.Println(total)
 }
 
 // pull the lists from the file
@@ -71,6 +71,18 @@ func sort_lists(list1, list2 []int32) ([]int32, []int32) {
 }
 
 // go through the lists and compare the indexes, tracking the difference total 
+func compare_lists(list1, list2 []int32) int32 {
+	var total int32
+	for i := 0; i < len(list1); i++ {
+		total += absInt32(list1[i] - list2[i])
+	}
+	return total
+}
 
-// return that total 
-
+// absInt32 returns the absolute value of an int32
+func absInt32(x int32) int32 {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
