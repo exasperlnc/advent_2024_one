@@ -11,8 +11,7 @@ import (
 
 func main() {
 	list1, list2, _ := pull_list()
-	sort1, sort2 := sort_lists(list1, list2)
-	total := compare_lists(sort1, sort2)
+	total := compare_lists(list1, list2)
 	fmt.Println(total)
 }
 
@@ -38,7 +37,7 @@ func pull_list() ([]int32, []int32, error) {
 
 	var list1, list2 []int32
 
-	// append the first half to one list
+	// insert each number in sorted order
 	for _, line := range lines {
 		parts := strings.Fields(line)
 		first, second := parts[0], parts[1]
@@ -46,31 +45,25 @@ func pull_list() ([]int32, []int32, error) {
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to parse first number: %w", err)
 		} else {
-			list1 = append(list1, int32(num1))
+			idx := sort.Search(len(list1), func(i int) bool { return list1[i] >= int32(num1) })
+			list1 = append(list1, 0)
+			copy(list1[idx+1:], list1[idx:])
+			list1[idx] = int32(num1)
 		}
-		// append the second half to the other list
 		num2, err := strconv.Atoi(second)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to parse second number: %w", err)
 		} else {
-			list2 = append(list2, int32(num2))
+			idx := sort.Search(len(list2), func(i int) bool { return list2[i] >= int32(num2) })
+			list2 = append(list2, 0)
+			copy(list2[idx+1:], list2[idx:])
+			list2[idx] = int32(num2)
 		}
 	}
 	return list1, list2, nil
 }
 
-// sort the lists
-func sort_lists(list1, list2 []int32) ([]int32, []int32) {
-	sort.Slice(list1, func(i, j int) bool {
-		return list1[i] < list1[j]
-	})
-	sort.Slice(list2, func(i, j int) bool {
-		return list2[i] < list2[j]
-	})
-	return list1, list2
-}
-
-// go through the lists and compare the indexes, tracking the difference total 
+// go through the lists and compare the indexes, tracking the difference total
 func compare_lists(list1, list2 []int32) int32 {
 	var total int32
 	for i := 0; i < len(list1); i++ {
